@@ -51,11 +51,15 @@ end
 ---@param bufnr number
 M.get_class_range = function(node, bufnr)
   local start_row, start_col, end_row, end_col = node:range()
+  local ft = vim.bo[bufnr].ft
   local children = node:named_children()
 
   if children[1] and vim.treesitter.get_node_text(children[1], bufnr) == "@apply" then
     start_row, start_col, _, _ = children[2]:range()
     _, _, end_row, end_col = children[#children]:range()
+  elseif ft == "templ" then
+    start_col = start_col + 1
+    end_col = end_col - 1
   end
 
   return start_row, start_col, end_row, end_col
